@@ -10,6 +10,11 @@
 		<input type="date" id="symptom-date" name="symptom-date" onchange="calculate()"><br><br>
 		<label for="recovery-date">解熱年月日:</label>
 		<input type="date" id="recovery-date" name="recovery-date" onchange="calculate()"><br><br>
+		<label for="age">患者の年齢:</label>
+		<select id="age" name="age" onchange="calculate()">
+			<option value="preschool">幼稚園以下</option>
+			<option value="elementary">小学生以上</option>
+		</select>
 	</form>
 	<br>
 	<p>登校可能日: <span id="result"></span></p>
@@ -18,6 +23,7 @@
 		function calculate() {
 			var symptomDate = new Date(document.getElementById("symptom-date").value);
 			var recoveryDate = new Date(document.getElementById("recovery-date").value);
+			var age = document.getElementById("age").value;
 
 			// エラー処理
 			if (symptomDate > recoveryDate) {
@@ -25,9 +31,17 @@
 				return;
 			}
 
-            var day3 = new Date(symptomDate.getTime() + (3 * 24 * 60 * 60 * 1000));
-			var day6 = new Date(recoveryDate.getTime() + (6 * 24 * 60 * 60 * 1000));
-			var resultDate = (day3 > day6) ? day3 : day6;
+			var resultDate;
+			if (age === "preschool") {
+				var day6afterSymptomDate = new Date(symptomDate.getTime() + (6 * 24 * 60 * 60 * 1000));
+				var day4afterRecoveryDate = new Date(recoveryDate.getTime() + (4 * 24 * 60 * 60 * 1000));
+				resultDate = (day6afterSymptomDate > day4afterRecoveryDate) ? day6afterSymptomDate : day4afterRecoveryDate;
+			} else {
+				var day3afterRecoveryDate = new Date(recoveryDate.getTime() + (3 * 24 * 60 * 60 * 1000));
+				var day6afterSymptomDate = new Date(symptomDate.getTime() + (6 * 24 * 60 * 60 * 1000));
+				resultDate = (day6afterSymptomDate > day3afterRecoveryDate) ? day6afterSymptomDate : day3afterRecoveryDate;
+			}
+
 			document.getElementById("result").innerHTML = resultDate.getFullYear() + "年" + (resultDate.getMonth()+1) + "月" + resultDate.getDate() + "日";
 		}
 
