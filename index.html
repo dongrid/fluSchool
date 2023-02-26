@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>インフルエンザ登校可能日</title>
+</head>
+<body>
+	<h1>インフルエンザ登校可能日</h1>
+	<form>
+		<label for="symptom-date">発症年月日:</label>
+		<input type="date" id="symptom-date" name="symptom-date" onchange="calculate()"><br><br>
+		<label for="recovery-date">解熱年月日:</label>
+		<input type="date" id="recovery-date" name="recovery-date" onchange="calculate()"><br><br>
+	</form>
+	<br>
+	<p>登校可能日: <span id="result"></span></p>
+
+	<script>
+		function calculate() {
+			var symptomDate = new Date(document.getElementById("symptom-date").value);
+			var recoveryDate = new Date(document.getElementById("recovery-date").value);
+
+			// エラー処理
+			if (symptomDate > recoveryDate) {
+				document.getElementById("result").innerHTML = "エラー：発症日が解熱日よりも遅いです";
+				return;
+			}
+
+            var day3 = new Date(symptomDate.getTime() + (3 * 24 * 60 * 60 * 1000));
+			var day6 = new Date(recoveryDate.getTime() + (6 * 24 * 60 * 60 * 1000));
+			var resultDate = (day3 > day6) ? day3 : day6;
+			document.getElementById("result").innerHTML = resultDate.getFullYear() + "年" + (resultDate.getMonth()+1) + "月" + resultDate.getDate() + "日";
+		}
+
+		// 初期化時にも一度計算する
+		calculate();
+	</script>
+	<a href="https://www.kaichi.ed.jp/influenza/entry-2257.html">学校のインフルエンザ対策について</a>
+</body>
+</html>
