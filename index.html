@@ -1,53 +1,134 @@
 <!DOCTYPE html>
 <html>
-<head>
-	<title>インフルエンザ登校可能日</title>
-</head>
-<body>
-	<h1>インフルエンザ登校可能日</h1>
-	<form>
-		<label for="symptom-date">発症年月日:</label>
-		<input type="date" id="symptom-date" name="symptom-date" onchange="calculate()"><br><br>
-		<label for="recovery-date">解熱年月日:</label>
-		<input type="date" id="recovery-date" name="recovery-date" onchange="calculate()"><br><br>
-		<label for="age">患者の年齢:</label>
-		<select id="age" name="age" onchange="calculate()">
-			<option value="preschool">幼稚園以下</option>
-			<option value="elementary">小学生以上</option>
-		</select>
-	</form>
-	<br>
-	<p>登校可能日: <span id="result"></span></p>
+  <head>
+    <title>インフルエンザ登校可能日</title>
+    <style>
+      table {
+        border-collapse: collapse;
+      }
 
-	<script>
+      td {
+        border: 1px solid black;
+        padding: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>インフルエンザ登校可能日</h1><br>
+    <form>
+      <label for="symptom-date">発症日:</label>
+      <input type="date" id="symptom-date" name="symptom-date" onchange="calculate()">
+    </form><br>
+    <table>
+      <tr>
+        <th>解熱日</th>
+        <th>幼稚園以下</th>
+        <th>小学生以上</th>
+      </tr>
+      <tr>
+        <td></td>
+        <td></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td></td>
+        <td></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td></td>
+        <td></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td></td>
+        <td></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td></td>
+        <td></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td></td>
+        <td></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td></td>
+        <td></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td></td>
+        <td></td>
+        <td></td>
+      </tr>
+   </table>
+   <script>
+		// 発症日を元に、登校可能日を計算し、テーブルに反映する関数
 		function calculate() {
-			var symptomDate = new Date(document.getElementById("symptom-date").value);
-			var recoveryDate = new Date(document.getElementById("recovery-date").value);
-			var age = document.getElementById("age").value;
+      // 発症日を取得
+      const symptomDateInput = document.getElementById("symptom-date");
+      if (!symptomDateInput.value) {
+        return; // 空文字列を返す
+      }
+      const symptomDate = new Date(document.getElementById("symptom-date").value);
 
-			// エラー処理
-			if (symptomDate > recoveryDate) {
-				document.getElementById("result").innerHTML = "エラー：発症日が解熱日よりも遅いです";
-				return;
-			}
+      // テーブルを更新
+      for (let i = 1; i <= 8; i++) {
+        // 解熱日を設定
+        var recoveryDate = new Date(symptomDate.getTime());
+        recoveryDate.setDate(symptomDate.getDate() + i - 1);
 
-			var resultDate;
-			if (age === "preschool") {
-				var day6afterSymptomDate = new Date(symptomDate.getTime() + (6 * 24 * 60 * 60 * 1000));
-				var day4afterRecoveryDate = new Date(recoveryDate.getTime() + (4 * 24 * 60 * 60 * 1000));
-				resultDate = (day6afterSymptomDate > day4afterRecoveryDate) ? day6afterSymptomDate : day4afterRecoveryDate;
-			} else {
-				var day3afterRecoveryDate = new Date(recoveryDate.getTime() + (3 * 24 * 60 * 60 * 1000));
-				var day6afterSymptomDate = new Date(symptomDate.getTime() + (6 * 24 * 60 * 60 * 1000));
-				resultDate = (day6afterSymptomDate > day3afterRecoveryDate) ? day6afterSymptomDate : day3afterRecoveryDate;
-			}
+        // 幼稚園以下の登校可能日を計算
+        // symptomDateから6日後の日付を計算する
+        var kindergartenDate = new Date(symptomDate.getTime());
+        kindergartenDate.setDate(symptomDate.getDate() + 6);
 
-			document.getElementById("result").innerHTML = resultDate.getFullYear() + "年" + (resultDate.getMonth()+1) + "月" + resultDate.getDate() + "日";
-		}
+        // recoveryDateから4日後の日付を計算する
+        var recovery4thDayDate = new Date(recoveryDate.getTime());
+        recovery4thDayDate.setDate(recoveryDate.getDate() + 4);
 
-		// 初期化時にも一度計算する
-		calculate();
+        // kindergartenDateとrecovery4thDayDateを比較して、kindergartenPossibleDateを決定する
+        var kindergartenPossibleDate;
+        if (kindergartenDate > recovery4thDayDate) {
+          kindergartenPossibleDate = kindergartenDate;
+        } else {
+          kindergartenPossibleDate = recovery4thDayDate;
+        }
+
+        // 小学生以上の登校可能日を計算
+        // symptomDateから6日後の日付を計算する
+        var schoolDate = new Date(symptomDate.getTime());
+        schoolDate.setDate(symptomDate.getDate() + 6);
+
+        // recoveryDateから3日後の日付を計算する
+        var school3rdDayDate = new Date(recoveryDate.getTime());
+        school3rdDayDate.setDate(recoveryDate.getDate() + 3);
+
+        // schoolDateとschool3rdDayDateを比較して、schoolPossibleDateを決定する
+        var schoolPossibleDate;
+        if (schoolDate > school3rdDayDate) {
+          schoolPossibleDate = schoolDate;
+        } else {
+          schoolPossibleDate = school3rdDayDate;
+        }
+
+        // 日付をテーブルに反映
+        var table = document.getElementsByTagName("table")[0];
+        table.rows[i].cells[0].textContent = recoveryDate.toLocaleDateString();
+        table.rows[i].cells[1].textContent = kindergartenPossibleDate.toLocaleDateString();
+        table.rows[i].cells[2].textContent = schoolPossibleDate.toLocaleDateString();
+      }
+    }
+
+		// ページが読み込まれたときにcalculate()関数を実行
+		window.onload = calculate();
 	</script>
-	<a href="https://www.kaichi.ed.jp/influenza/entry-2257.html">学校のインフルエンザ対策について</a>
-</body>
+  <br>
+  ソース：
+	<a href="https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/kenkou_iryou/kenkou/kekkaku-kansenshou/infulenza/QA2022.html#:~:text=%E7%8F%BE%E5%9C%A8%E3%80%81%E5%AD%A6%E6%A0%A1%E4%BF%9D%E5%81%A5%E5%AE%89%E5%85%A8%E6%B3%95,%E3%80%81%E3%81%93%E3%81%AE%E9%99%90%E3%82%8A%E3%81%A7%E3%81%AF%E3%81%82%E3%82%8A%E3%81%BE%E3%81%9B%E3%82%93%EF%BC%89%E3%80%82">令和４年度インフルエンザQ&A</a>
+  </body>
 </html>
